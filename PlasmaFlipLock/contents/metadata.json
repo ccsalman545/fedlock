@@ -1,0 +1,23 @@
+{
+    "KPlugin": {
+        "Id": "org.kde.plasmafliplock.lockscreen",
+        "Name": "PlasmaFlipLock",
+        "Description": "Minimal Fliqlo-style flip-clock lock screen for KDE Plasma 6 (KScreenLocker). Blurred wallpaper, huge mechanical flip clock, date, battery and glass password panel.",
+        "Version": "1.0.0",
+        "License": "GPL-2.0-or-later",
+        "Authors": [
+            {
+                "Name": "PlasmaFlipLock contributors"
+            }
+        ],
+        "Category": "Lock Screen",
+        "EnabledByDefault": true
+    },
+    "X-Plasma-APIVersion": "2",
+    "X-PlasmaFlipLock": {
+        "Comment": "This file is informational metadata for the lock screen contents. The runtime entry point used by kscreenlocker_greet is LockScreen.qml in this directory (the 'lockscreenmainscript' definition of the Plasma shell package). The shell package's own metadata.json (one directory up) governs package identity and X-Plasma-APIVersion. To uninstall: run uninstall.sh.",
+        "EntryPoint": "LockScreen.qml",
+        "Target": "KDE Plasma 6.x / Qt 6 / KF6 / Wayland",
+        "Requires": "kscreenlocker_greet (Plasma 6.4+ recommended; <=6.3 supported through compatibility glue)"
+    }
+}
