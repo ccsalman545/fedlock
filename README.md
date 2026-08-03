@@ -1,20 +1,21 @@
-# fedlock  PlasmaFlipLock
+# fedlock — PlasmaFlipLock
 
-A complete custom KDE Plasma 6 lock screen (KScreenLocker) for Fedora 44 /
-Wayland: blurred wallpaper, a huge Fliqlo-style flip clock, date, battery
-status, and a glassmorphism password panel — on top of KDE's untouched
-authentication backend.
+A user-scoped KDE Plasma 6.7 Look-and-Feel KPackage by **Muhammed Salman
+(CC)**. It provides a premium mechanical flip clock, an inexpensive teal/navy/
+purple ambient background, battery status, and a frosted password pill while
+leaving kscreenlocker's authentication backend untouched.
 
-**Everything lives in [`PlasmaFlipLock/`](PlasmaFlipLock/)  see
-[`PlasmaFlipLock/README.md`](PlasmaFlipLock/README.md)** for features,
-installation (`sudo ./install.sh`), testing
-(`kscreenlocker_greet --testing`), configuration and rollback.
-
-Quick start:
+See [`PlasmaFlipLock/README.md`](PlasmaFlipLock/README.md) for the live-machine
+investigation, package layout, safe install/preview workflow, rollback, and
+performance notes.
 
 ```bash
 cd PlasmaFlipLock
-chmod +x install.sh
-sudo ./install.sh
-kscreenlocker_greet --testing
+./install.sh                 # install/upgrade only; does not apply
+./install.sh --apply         # explicit safety acknowledgement, then apply
+./install.sh --preview       # non-locking kscreenlocker_greet --testing
 ```
+
+The repository's current checkout is not a KDE session, so no live lock-screen
+preview was run here. Run the commands above on the target Fedora Plasma
+machine after the installer has verified its local APIs and flags.

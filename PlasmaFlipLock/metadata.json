@@ -1,0 +1,19 @@
+{
+    "KPackageStructure": "Plasma/LookAndFeel",
+    "KPlugin": {
+        "Id": "com.muhammedsalman.fedlock",
+        "Name": "Fedlock Premium Flip",
+        "Description": "A restrained animated flip-clock lock screen for KDE Plasma 6.7",
+        "Version": "1.0.0",
+        "License": "GPL-2.0-or-later",
+        "Category": "Plasma Look And Feel",
+        "EnabledByDefault": false,
+        "Authors": [
+            {
+                "Name": "Muhammed Salman"
+            }
+        ],
+        "Website": "https://github.com/ccsalman545/fedlock"
+    },
+    "X-Plasma-APIVersion": "2"
+}
