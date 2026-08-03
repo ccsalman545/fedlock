@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#15151a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-  <!-- Login (arrow) icon for the password panel's integrated submit button.
-       The runtime button draws this glyph with a QML Canvas for perfect
-       tinting; this SVG is the design source and may be reused elsewhere. -->
-  <line x1="4" y1="12" x2="20" y2="12"/>
-  <polyline points="13 6 19 12 13 18"/>
-</svg>

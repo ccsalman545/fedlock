@@ -1,9 +1,0 @@
-# SPDX-License-Identifier: GPL-2.0-or-later
-#
-# Directory metadata for the PlasmaFlipLock lock screen QML.
-#
-# Registers PasswordSync as a QML *singleton* for every file in this folder
-# (the engine auto-loads the qmldir of the directory the lock screen main
-# script lives in — the same mechanism the stock lock screen uses).
-
-singleton PasswordSync 1.0 PasswordSync.qml
