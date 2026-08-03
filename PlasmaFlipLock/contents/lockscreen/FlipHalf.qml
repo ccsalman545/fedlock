@@ -27,11 +27,18 @@ Item {
             GradientStop { position: 1.0; color: "#0b1118" }
         }
 
+        // Static highlights give the cached faces a physical, anti-aliased sheen.
+        Rectangle {
+            width: parent.width
+            height: Math.max(2, parent.height * 0.11)
+            radius: parent.radius
+            color: Qt.rgba(1, 1, 1, root.topHalf ? 0.055 : 0.018)
+        }
         Text {
             anchors.centerIn: parent
             text: root.digit
             color: root.theme.digit
-            font.family: "DejaVu Sans"
+            font.family: root.theme.displayFont
             font.pixelSize: Math.max(30, Math.round(root.cardHeight * root.theme.digitSize))
             font.weight: Font.DemiBold
             renderType: Text.NativeRendering

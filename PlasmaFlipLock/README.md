@@ -205,3 +205,27 @@ QT_LOGGING_RULES='*.debug=true' kscreenlocker_greet --testing
 
 The command must remain the non-locking `--testing` mode until the preview is
 known-good.
+
+## Qt 6 / Material 3 update
+
+The Qt 6 formatting overloads put the locale **before** the format string. All
+clock formatting now uses the Qt 6-safe forms:
+
+```qml
+Qt.formatTime(currentTime, Qt.locale(), "HH:mm")
+Qt.formatDate(currentTime, Qt.locale(), "dddd")
+Qt.formatDate(currentTime, Qt.locale(), "d MMMM yyyy")
+```
+
+This fixes the `Cannot convert argument 1 ... to QLocale` diagnostics and makes
+the digit, weekday, and date bindings render using the session locale. No
+Qt 5-only `Qt.format*` argument ordering remains in the package.
+
+The visual layer was also consolidated around Material 3 tokens in `Theme.qml`:
+large 28px surfaces, tonal glass containers, Inter/Google Sans fallbacks,
+Material-style short easing, a restrained pointer tilt, and cached aurora
+parallax. `SystemControls.qml` supplies battery-adjacent keyboard/accessibility
+and a power-action affordance. Its sleep/restart/shutdown requests are signals,
+not shell commands: a lock theme must never bypass Plasma's host-authorized
+power path. Connect them only where the target greeter exposes its approved
+power action API.

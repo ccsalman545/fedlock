@@ -88,7 +88,7 @@ Item {
             anchors.verticalCenter: parent.verticalCenter
             text: root.percent + "% · " + root.stateText
             color: root.theme.secondaryText
-            font.family: "DejaVu Sans"
+            font.family: root.theme.bodyFont
             font.pixelSize: Math.max(12, Math.round(root.pixelSize))
             renderType: Text.NativeRendering
             textFormat: Text.PlainText
