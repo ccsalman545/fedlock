@@ -17,6 +17,11 @@ Item {
     property int tickMs: 33
     property real phase: 0.0
     property int activeMs: 0
+    // Input only shifts cached layers; it never causes a live blur redraw.
+    property real pointerX: width / 2
+    property real pointerY: height / 2
+    readonly property real parallaxX: width > 0 ? (pointerX / width - 0.5) : 0
+    readonly property real parallaxY: height > 0 ? (pointerY / height - 0.5) : 0
 
     Rectangle {
         anchors.fill: parent
@@ -33,8 +38,8 @@ Item {
         id: tealBlob
         width: Math.max(260, root.width * 0.60)
         height: Math.max(220, root.height * 0.50)
-        x: -width * 0.20 + Math.sin(root.phase * 6.283 + 0.2) * root.width * 0.12
-        y: root.height * 0.02 + Math.cos(root.phase * 6.283) * root.height * 0.07
+        x: -width * 0.20 + Math.sin(root.phase * 6.283 + 0.2) * root.width * 0.12 + root.parallaxX * 14
+        y: root.height * 0.02 + Math.cos(root.phase * 6.283) * root.height * 0.07 + root.parallaxY * 10
         blobColor: root.theme.auroraTeal
         intensity: 0.25
         opacity: 0.92 + Math.sin(root.phase * 6.283 + 0.4) * 0.08
@@ -45,8 +50,8 @@ Item {
         id: violetBlob
         width: Math.max(280, root.width * 0.58)
         height: Math.max(230, root.height * 0.55)
-        x: root.width * 0.53 + Math.cos(root.phase * 6.283 + 1.1) * root.width * 0.13
-        y: root.height * 0.42 + Math.sin(root.phase * 6.283 + 1.4) * root.height * 0.10
+        x: root.width * 0.53 + Math.cos(root.phase * 6.283 + 1.1) * root.width * 0.13 - root.parallaxX * 18
+        y: root.height * 0.42 + Math.sin(root.phase * 6.283 + 1.4) * root.height * 0.10 - root.parallaxY * 12
         blobColor: root.theme.auroraPurple
         intensity: 0.22
         opacity: 0.90 + Math.cos(root.phase * 6.283 + 0.7) * 0.10

@@ -25,6 +25,8 @@ Item {
     implicitWidth: 800
     implicitHeight: 600
 
+    focus: true
+
     LayoutMirroring.enabled: Application.layoutDirection === Qt.RightToLeft
     LayoutMirroring.childrenInherit: true
 
@@ -33,9 +35,20 @@ Item {
     readonly property int cardHeight: Math.max(190, Math.round(Math.min(height * 0.34, width * 0.23)))
     readonly property bool passwordBusy: authenticator.busy === true || graceLockTimer.running
     property bool passwordlessReady: false
+    property bool interactionStarted: false
+    property real pointerX: width / 2
+    property real pointerY: height / 2
+
+    function beginInteraction() {
+        interactionStarted = true
+        passwordField.forceFocus()
+    }
 
     AmbientBackground {
+        id: background
         anchors.fill: parent
+        pointerX: root.pointerX
+        pointerY: root.pointerY
         theme: designTheme
         pauseAfterMs: designTheme.ambientPauseAfterMs
         tickMs: designTheme.ambientTickMs
@@ -47,7 +60,9 @@ Item {
     MouseArea {
         anchors.fill: parent
         z: 1
-        onPressed: passwordField.forceFocus()
+        hoverEnabled: true
+        onPositionChanged: function(mouse) { root.pointerX = mouse.x; root.pointerY = mouse.y }
+        onPressed: root.beginInteraction()
     }
 
     Column {
@@ -57,6 +72,8 @@ Item {
         anchors.verticalCenter: parent.verticalCenter
         anchors.verticalCenterOffset: -Math.round(parent.height * 0.045)
         spacing: Math.max(12, Math.round(parent.height * 0.020))
+        scale: root.interactionStarted ? 0.92 : 1.0
+        Behavior on scale { NumberAnimation { duration: 280; easing.type: Easing.OutCubic } }
 
         FlipClock {
             id: clock
@@ -71,9 +88,9 @@ Item {
 
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: Qt.formatDateTime(clock.currentTime, "dddd", Qt.locale("en_US")).toUpperCase()
+                text: Qt.formatDate(clock.currentTime, Qt.locale(), "dddd").toUpperCase()
                 color: designTheme.primaryText
-                font.family: "DejaVu Sans"
+                font.family: designTheme.displayFont
                 font.pixelSize: Math.max(17, Math.round(root.height * 0.030))
                 font.weight: Font.Bold
                 font.letterSpacing: Math.max(2, Math.round(root.height * 0.006))
@@ -81,9 +98,9 @@ Item {
             }
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: Qt.formatDateTime(clock.currentTime, "d MMMM yyyy", Qt.locale("en_US"))
+                text: Qt.formatDate(clock.currentTime, Qt.locale(), "d MMMM yyyy")
                 color: designTheme.secondaryText
-                font.family: "DejaVu Sans"
+                font.family: designTheme.displayFont
                 font.pixelSize: Math.max(15, Math.round(root.height * 0.021))
                 renderType: Text.NativeRendering
             }
@@ -98,6 +115,18 @@ Item {
         }
     }
 
+    SystemControls {
+        id: systemControls
+        z: 5
+        theme: designTheme
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        anchors.leftMargin: Math.max(20, Math.round(root.width * 0.035))
+        anchors.bottomMargin: Math.max(20, Math.round(root.height * 0.040))
+        // Hosts may connect these signals to their approved power/action API.
+        onAccessibilityRequested: root.showMessage("Accessibility options are provided by Plasma", false)
+    }
+
     Text {
         id: statusText
         z: 3
@@ -107,7 +136,7 @@ Item {
         width: Math.min(implicitWidth, root.width * 0.75)
         text: root.notification
         color: root.notificationError ? designTheme.warning : designTheme.mutedText
-        font.family: "DejaVu Sans"
+        font.family: designTheme.displayFont
         font.pixelSize: Math.max(12, Math.round(root.height * 0.016))
         horizontalAlignment: Text.AlignHCenter
         elide: Text.ElideRight
@@ -119,7 +148,11 @@ Item {
         id: passwordField
         z: 4
         visible: !root.passwordlessReady
+        opacity: root.interactionStarted ? 1 : 0
+        transform: Translate { y: root.interactionStarted ? 0 : 36; Behavior on y { NumberAnimation { duration: 260; easing.type: Easing.OutCubic } } }
+        Behavior on opacity { NumberAnimation { duration: 220; easing.type: Easing.OutCubic } }
         theme: designTheme
+        pointerRatio: root.width > 0 ? (root.pointerX / root.width - 0.5) : 0
         width: Math.min(root.width * 0.52, Math.max(330, root.height * 0.52))
         height: Math.max(54, Math.min(78, root.height * 0.074))
         anchors.horizontalCenter: parent.horizontalCenter
@@ -155,7 +188,7 @@ Item {
             anchors.centerIn: parent
             text: "Unlock"
             color: designTheme.primaryText
-            font.family: "DejaVu Sans"
+            font.family: designTheme.displayFont
             font.pixelSize: Math.max(14, Math.round(parent.height * 0.25))
             font.weight: Font.Medium
             renderType: Text.NativeRendering
@@ -250,12 +283,18 @@ Item {
         }
     }
 
+    Keys.onPressed: function(event) {
+        if (!root.interactionStarted) {
+            root.beginInteraction()
+            event.accepted = false
+        }
+    }
+
     // kscreenlocker_greet sets viewVisible after the first frame. Starting the
     // backend here mirrors the stock theme and avoids authenticating too early.
     onViewVisibleChanged: {
         if (viewVisible) {
             authenticator.startAuthenticating()
-            passwordField.forceFocus()
         }
     }
 

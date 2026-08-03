@@ -1,44 +1,31 @@
 /*
-    One cached aurora blob.
-
-    The source shape and FastBlur never change after construction. The parent
-    moves this complete, already-rendered item, so ambient motion does not
-    re-run a blur on every frame. A small cache is used instead of a full-screen
-    wallpaper texture.
+   Qt 6-only aurora primitive.  This deliberately avoids Qt5Compat.GraphicalEffects:
+   a handful of cached translucent discs approximates a soft bloom without a
+   full-screen or continuously recomputed Gaussian-blur pass.
 */
 import QtQuick
-import Qt5Compat.GraphicalEffects
 
 Item {
     id: root
-
     property color blobColor: "#35d8c5"
     property real intensity: 0.30
+    // Kept as a public tuning property for callers; softness is baked in layers.
     property real blurRadius: 54
-
-    // Keep the finished effect in one scene-graph texture while its parent
-    // translates. This is intentionally not a live backdrop blur.
     layer.enabled: true
     layer.smooth: true
 
-    Item {
-        id: shapeSource
-        anchors.fill: parent
-        visible: false
-
-        Rectangle {
+    Repeater {
+        model: 4
+        delegate: Rectangle {
+            required property int index
+            readonly property real inset: index * Math.min(root.width, root.height) * 0.075
             anchors.fill: parent
-            radius: Math.max(width, height) * 0.50
+            anchors.margins: inset
+            radius: Math.min(width, height) / 2
             color: root.blobColor
-            opacity: root.intensity
+            // Smaller layers are brighter; together they create a low-cost bloom.
+            opacity: root.intensity * (0.13 + index * 0.07)
+            antialiasing: true
         }
-    }
-
-    FastBlur {
-        anchors.fill: shapeSource
-        source: shapeSource
-        radius: root.blurRadius
-        cached: true
-        transparentBorder: true
     }
 }
