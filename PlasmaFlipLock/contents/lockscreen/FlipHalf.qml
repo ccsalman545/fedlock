@@ -38,7 +38,7 @@ Item {
             anchors.centerIn: parent
             text: root.digit
             color: root.theme.digit
-            font.family: root.theme.displayFont
+            font.family: (typeof root.theme.displayFont === 'string') ? root.theme.displayFont.split(',')[0].trim() : root.theme.displayFont
             font.pixelSize: Math.max(30, Math.round(root.cardHeight * root.theme.digitSize))
             font.weight: Font.DemiBold
             renderType: Text.NativeRendering

@@ -91,7 +91,7 @@ Item {
     TextInput {
         id: passwordInput
         x: Math.round(root.height * 0.90)
-        width: Math.max(40, root.width - x - submitButton.width - Math.round(root.height * 1.18))
+        width: Math.max(40, root.width - x - submitButton.width - eyeButton.width - Math.round(root.height * 1.18))
         height: root.height * 0.72
         anchors.verticalCenter: parent.verticalCenter
         enabled: !root.busy
@@ -99,7 +99,7 @@ Item {
         color: root.theme.primaryText
         selectionColor: Qt.rgba(0.62, 0.91, 0.88, 0.45)
         selectedTextColor: root.theme.primaryText
-        font.family: root.theme.bodyFont
+        font.family: (typeof root.theme.bodyFont === 'string') ? root.theme.bodyFont.split(',')[0].trim() : root.theme.bodyFont
         font.pixelSize: Math.max(14, Math.round(root.height * 0.27))
         echoMode: TextInput.Password
         passwordCharacter: "•"
@@ -118,6 +118,46 @@ Item {
         }
     }
 
+    // Show/Hide password button
+    Item {
+        id: eyeButton
+        width: root.height * 0.62
+        height: width
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.right: submitButton.left
+        anchors.rightMargin: root.height * 0.12
+
+        property bool revealed: false
+
+        Rectangle {
+            anchors.fill: parent
+            radius: root.theme.largeCorner
+            color: "transparent"
+        }
+        Image {
+            id: eyeIcon
+            anchors.centerIn: parent
+            width: parent.width * 0.56
+            height: width
+            source: revealed ? Qt.resolvedUrl("assets/eye-open.svg") : Qt.resolvedUrl("assets/eye-closed.svg")
+            fillMode: Image.PreserveAspectFit
+            smooth: true
+            opacity: 0.82
+        }
+        MouseArea {
+            anchors.fill: parent
+            cursorShape: Qt.PointingHandCursor
+            onPressed: {
+                eyeButton.revealed = true
+                passwordInput.echoMode = TextInput.Normal
+            }
+            onReleased: {
+                eyeButton.revealed = false
+                passwordInput.echoMode = TextInput.Password
+            }
+        }
+    }
+
     Text {
         x: passwordInput.x
         width: passwordInput.width
@@ -126,7 +166,7 @@ Item {
         visible: passwordInput.text.length === 0
         text: "Enter password"
         color: root.theme.mutedText
-        font.family: root.theme.bodyFont
+        font.family: (typeof root.theme.bodyFont === 'string') ? root.theme.bodyFont.split(',')[0].trim() : root.theme.bodyFont
         font.pixelSize: passwordInput.font.pixelSize
         verticalAlignment: Text.AlignVCenter
         renderType: Text.NativeRendering
