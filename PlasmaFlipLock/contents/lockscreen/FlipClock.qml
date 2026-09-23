@@ -8,7 +8,7 @@ Item {
     property int cardHeight: 300
     property date currentTime: new Date()
 
-    readonly property string timeText: Qt.formatTime(currentTime, Qt.locale(), "HH:mm")
+    readonly property string timeText: Qt.locale().toString(currentTime, "HH:mm")
     readonly property int cardWidth: Math.round(cardHeight * 0.66)
     readonly property int cardGap: Math.max(6, Math.round(cardHeight * 0.045))
     readonly property int separatorWidth: Math.max(24, Math.round(cardHeight * 0.19))

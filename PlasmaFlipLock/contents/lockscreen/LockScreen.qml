@@ -10,6 +10,9 @@
 import QtQml
 import QtQuick
 
+import org.kde.plasma.private.keyboardindicator as KeyboardIndicator
+import org.kde.plasma.private.sessions
+
 Item {
     id: root
 
@@ -31,6 +34,11 @@ Item {
     LayoutMirroring.childrenInherit: true
 
     Theme { id: designTheme }
+    SessionManagement { id: sessionManagement }
+    KeyboardIndicator.KeyState {
+        id: capsLockState
+        key: Qt.Key_CapsLock
+    }
 
     readonly property int cardHeight: Math.max(190, Math.round(Math.min(height * 0.34, width * 0.23)))
     readonly property bool passwordBusy: authenticator.busy === true || graceLockTimer.running
@@ -41,6 +49,7 @@ Item {
 
     function beginInteraction() {
         interactionStarted = true
+        authenticator.startAuthenticating()
         passwordField.forceFocus()
     }
 
@@ -88,7 +97,7 @@ Item {
 
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: Qt.formatDate(clock.currentTime, Qt.locale(), "dddd").toUpperCase()
+                text: Qt.locale().toString(clock.currentTime, "dddd").toUpperCase()
                 color: designTheme.primaryText
                 font.family: designTheme.displayFont
                 font.pixelSize: Math.max(17, Math.round(root.height * 0.030))
@@ -98,7 +107,7 @@ Item {
             }
             Text {
                 anchors.horizontalCenter: parent.horizontalCenter
-                text: Qt.formatDate(clock.currentTime, Qt.locale(), "d MMMM yyyy")
+                text: Qt.locale().toString(clock.currentTime, "d MMMM yyyy")
                 color: designTheme.secondaryText
                 font.family: designTheme.displayFont
                 font.pixelSize: Math.max(15, Math.round(root.height * 0.021))
@@ -115,16 +124,25 @@ Item {
         }
     }
 
+    Connections {
+        target: sessionManagement
+        function onAboutToSuspend() {
+            root.clearPassword()
+        }
+    }
+
     SystemControls {
         id: systemControls
         z: 5
         theme: designTheme
+        capsLockOn: capsLockState.locked
+        sleepAvailable: sessionManagement.canSuspend
         anchors.left: parent.left
         anchors.bottom: parent.bottom
         anchors.leftMargin: Math.max(20, Math.round(root.width * 0.035))
         anchors.bottomMargin: Math.max(20, Math.round(root.height * 0.040))
-        // Hosts may connect these signals to their approved power/action API.
-        onAccessibilityRequested: root.showMessage("Accessibility options are provided by Plasma", false)
+        // SessionManagement is Plasma's approved host API for lock-screen power actions.
+        onSleepRequested: sessionManagement.suspend()
     }
 
     Text {
@@ -274,11 +292,11 @@ Item {
             root.showMessage(authenticator.errorMessage, true)
         }
 
-        function onPromptChanged(message) {
+        function onPromptChanged() {
             root.showMessage(authenticator.prompt, false)
         }
 
-        function onPromptForSecretChanged(message) {
+        function onPromptForSecretChanged() {
             passwordField.forceFocus()
         }
     }
@@ -294,7 +312,22 @@ Item {
     // backend here mirrors the stock theme and avoids authenticating too early.
     onViewVisibleChanged: {
         if (viewVisible) {
+            // The greeter sets this after the first frame. Show and focus the
+            // field together with the first authentication request so a PAM
+            // prompt is never sent to an invisible TextInput.
+            interactionStarted = true
             authenticator.startAuthenticating()
+            passwordField.forceFocus()
+        }
+    }
+
+    Component.onCompleted: {
+        // This also covers test hosts that set viewVisible before completing
+        // the component rather than changing it after the first frame.
+        if (viewVisible) {
+            interactionStarted = true
+            authenticator.startAuthenticating()
+            passwordField.forceFocus()
         }
     }
 

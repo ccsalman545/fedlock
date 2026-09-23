@@ -151,10 +151,12 @@ Item {
                 eyeButton.revealed = true
                 passwordInput.echoMode = TextInput.Normal
             }
-            onReleased: {
+            function hidePassword() {
                 eyeButton.revealed = false
                 passwordInput.echoMode = TextInput.Password
             }
+            onReleased: hidePassword()
+            onCanceled: hidePassword()
         }
     }
 
