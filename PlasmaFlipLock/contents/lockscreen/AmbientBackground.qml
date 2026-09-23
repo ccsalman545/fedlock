@@ -1,7 +1,7 @@
 /*
     Low-cost ambient background.
 
-    The base gradient is static. Two small, cached FastBlur blobs are moved by
+    The base gradient is static. Two small, cached layered blobs are moved by
     a 30 Hz timer; only x/y/opacity change after their one-time render. The
     timer pauses after the configured timeout to avoid burning battery while a
     laptop is left locked. Set pauseAfterMs to 0 in Theme.qml to keep moving.
@@ -43,7 +43,6 @@ Item {
         blobColor: root.theme.auroraTeal
         intensity: 0.25
         opacity: 0.92 + Math.sin(root.phase * 6.283 + 0.4) * 0.08
-        blurRadius: 52
     }
 
     AuroraBlob {
@@ -55,7 +54,6 @@ Item {
         blobColor: root.theme.auroraPurple
         intensity: 0.22
         opacity: 0.90 + Math.cos(root.phase * 6.283 + 0.7) * 0.10
-        blurRadius: 58
     }
 
     // A static blue wash adds depth without another effect pass.

@@ -2,8 +2,10 @@
 import QtQuick
 
 QtObject {
-    readonly property string displayFont: "Inter, Google Sans, Noto Sans"
-    readonly property string bodyFont: "Inter, Google Sans, Noto Sans"
+    // Qt accepts one family name here and supplies its own fallback when the
+    // preferred family is not installed.
+    readonly property string displayFont: "Inter"
+    readonly property string bodyFont: "Inter"
     readonly property color backgroundTop: "#071b2a"
     readonly property color backgroundMiddle: "#101432"
     readonly property color backgroundBottom: "#170e2d"

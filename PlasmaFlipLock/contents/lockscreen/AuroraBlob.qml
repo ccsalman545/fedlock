@@ -9,8 +9,6 @@ Item {
     id: root
     property color blobColor: "#35d8c5"
     property real intensity: 0.30
-    // Kept as a public tuning property for callers; softness is baked in layers.
-    property real blurRadius: 54
     layer.enabled: true
     layer.smooth: true
 
